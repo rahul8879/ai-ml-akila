@@ -7,3 +7,6 @@ scikit-learn
 plotly
 pycgi
 pandas-profiling
+xgboost
+lightgbm
+catboost
