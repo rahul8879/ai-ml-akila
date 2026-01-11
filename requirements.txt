@@ -5,8 +5,10 @@ seaborn
 matplotlib
 scikit-learn
 plotly
-pycgi
+# pycgi
 pandas-profiling
 xgboost
 lightgbm
 catboost
+fastapi
+uvicorn

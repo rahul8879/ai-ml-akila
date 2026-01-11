@@ -1,3 +1,6 @@
 /ml-env/
 /Python/Reviews.csv
 /data
+/MlOps/mlruns
+/MlOps/mlflow.db
+/MlOps/random_forest_model.pkl
