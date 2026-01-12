@@ -4,4 +4,4 @@
 /MlOps/mlruns
 /MlOps/mlflow.db
 /MlOps/random_forest_model.pkl
-/ML_case_Studies/data/
+/ML_case_Studies/data/fraudTest.csv
