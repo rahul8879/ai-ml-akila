@@ -6,7 +6,7 @@ matplotlib
 scikit-learn
 plotly
 # pycgi
-pandas-profiling
+# pandas-profiling
 xgboost
 lightgbm
 catboost
