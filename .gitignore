@@ -5,5 +5,9 @@
 /MlOps/mlflow.db
 /MlOps/random_forest_model.pkl
 /ML_case_Studies/data/fraudTest.csv
+<<<<<<< HEAD
 /ml311/
 /torch-env/
+=======
+/translator_rnn_model.pth
+>>>>>>> 383c5ba (added rnn example)
