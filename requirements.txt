@@ -12,3 +12,5 @@ lightgbm
 catboost
 fastapi
 uvicorn
+python-dotenv
+openai
