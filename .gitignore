@@ -1,14 +1,199 @@
-/ml-env/
-/Python/Reviews.csv
-/data
-/MlOps/mlruns
-/MlOps/mlflow.db
-/MlOps/random_forest_model.pkl
-/ML_case_Studies/data/fraudTest.csv
-# /GenAI/.env
-<<<<<<< HEAD
-/ml311/
-/torch-env/
-=======
-/translator_rnn_model.pth
->>>>>>> 383c5ba (added rnn example)
+# ====================================
+# Python & Virtual Environments
+# ====================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+env/
+ENV/
+ml-env/
+ml311/
+torch-env/
+.venv
+
+# ====================================
+# Jupyter Notebook
+# ====================================
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
+*.ipynb_checkpoints
+
+# ====================================
+# MLOps & Experiment Tracking
+# ====================================
+mlruns/
+mlflow.db
+*.db
+*.sqlite
+*.sqlite3
+
+# Model files (large binary files)
+*.h5
+*.hdf5
+*.pkl
+*.pickle
+*.joblib
+*.pt
+*.pth
+*.ckpt
+*.pb
+*.onnx
+*.tflite
+*.caffemodel
+*.weights
+
+# ====================================
+# Data Files (to avoid large commits)
+# ====================================
+# Exclude all data directories
+datasets/
+data/
+*/data/
+raw_data/
+processed_data/
+
+# Large CSV/data files
+*.csv
+*.tsv
+*.parquet
+*.feather
+*.arrow
+
+# Excel files (can be large)
+*.xlsx
+*.xlsm
+*.xls
+
+# Compressed data files
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+
+# Exception: Allow small sample/example files if needed
+# !sample_data.csv
+# !example.xlsx
+
+# ====================================
+# Secrets & Credentials
+# ====================================
+.env
+.env.*
+*.env
+.env.local
+.env.*.local
+credentials.json
+credentials.yaml
+secrets.json
+secrets.yaml
+*.pem
+*.key
+*.cert
+api_keys.txt
+config.ini
+settings.ini
+
+# AWS credentials
+.aws/
+*.aws
+
+# GCP credentials
+*.json.key
+*-key.json
+
+# API tokens
+.token
+*.token
+
+# ====================================
+# IDE & Editor Files
+# ====================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# PyCharm
+.idea/
+*.iml
+*.iws
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# ====================================
+# Operating System Files
+# ====================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# ====================================
+# Logs & Temporary Files
+# ====================================
+*.log
+logs/
+*.tmp
+*.temp
+temp/
+tmp/
+
+# ====================================
+# Testing & Coverage
+# ====================================
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.hypothesis/
+
+# ====================================
+# Archive Folder (backup/working files)
+# ====================================
+archive/
+
+# ====================================
+# Git Artifacts
+# ====================================
+*.orig
+*.rej
+
+# ====================================
+# Custom Project-Specific Ignores
+# ====================================
+# Add any project-specific patterns here
