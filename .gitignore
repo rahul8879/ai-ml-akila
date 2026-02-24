@@ -181,6 +181,7 @@ tmp/
 htmlcov/
 .tox/
 .hypothesis/
+/ml-akila/
 
 # ====================================
 # Archive Folder (backup/working files)
