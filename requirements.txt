@@ -14,3 +14,8 @@ fastapi
 uvicorn
 python-dotenv
 openai
+langchain_community
+pymupdf==1.24.4
+pypdf==4.2.0
+unstructured
+markdown
