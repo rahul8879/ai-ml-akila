@@ -1,0 +1,72 @@
+[
+  {
+    "filename": "01_personal_loan_eligibility.pdf",
+    "topic": "Personal Loan Eligibility Criteria",
+    "department": "sales",
+    "loan_type": "personal",
+    "year": 2024
+  },
+  {
+    "filename": "02_personal_loan_interest_rates.pdf",
+    "topic": "Personal Loan Interest Rates and Charges",
+    "department": "risk",
+    "loan_type": "personal",
+    "year": 2024
+  },
+  {
+    "filename": "03_personal_loan_documents.pdf",
+    "topic": "Personal Loan Required Documents",
+    "department": "operations",
+    "loan_type": "personal",
+    "year": 2024
+  },
+  {
+    "filename": "04_home_loan_eligibility.pdf",
+    "topic": "Home Loan Eligibility and Terms",
+    "department": "sales",
+    "loan_type": "home",
+    "year": 2024
+  },
+  {
+    "filename": "05_loan_rejection_policy.pdf",
+    "topic": "Loan Rejection Reasons and Reapplication Policy",
+    "department": "risk",
+    "loan_type": "personal",
+    "year": 2024
+  },
+  {
+    "filename": "06_emi_default_policy.pdf",
+    "topic": "EMI Payment and Default Policy",
+    "department": "collections",
+    "loan_type": "personal",
+    "year": 2024
+  },
+  {
+    "filename": "07_business_loan_products.pdf",
+    "topic": "Business Loan Products for SME and MSME",
+    "department": "sales",
+    "loan_type": "business",
+    "year": 2024
+  },
+  {
+    "filename": "08_grievance_policy.pdf",
+    "topic": "Customer Grievance Redressal Policy",
+    "department": "operations",
+    "loan_type": "general",
+    "year": 2024
+  },
+  {
+    "filename": "09_gold_loan_products.pdf",
+    "topic": "Gold Loan Products and Process",
+    "department": "sales",
+    "loan_type": "gold",
+    "year": 2024
+  },
+  {
+    "filename": "10_cibil_impact_policy.pdf",
+    "topic": "Credit Score Impact and Reporting Policy",
+    "department": "risk",
+    "loan_type": "general",
+    "year": 2024
+  }
+]
