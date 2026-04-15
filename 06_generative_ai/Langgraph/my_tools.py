@@ -12,29 +12,29 @@ import requests
 # =============================================================================
 # Weather Tools
 # =============================================================================
-
 @tool
-def get_weather(location:str) -> str:
+def get_weather(location: str) -> str:
     """Get current weather for a location.
-    
     Use for queries about weather, temperature, or conditions in any city.
-    Examples: "weather in Paris", "temperature in Tokyo", "is it raining in London"
     
     Args:
         location: City name (e.g., "New York", "London", "Tokyo")
-        
     Returns:
         Current weather information including temperature and conditions.
     """
-
     url = f"https://wttr.in/{location}?format=j1"
     response = requests.get(url, timeout=10)
-
     response.raise_for_status()
     data = response.json()
 
-    return data
+    # ✅ Parse only what's needed
+    current = data["current_condition"][0]
+    temp_c = current["temp_C"]
+    feels_like = current["FeelsLikeC"]
+    humidity = current["humidity"]
+    description = current["weatherDesc"][0]["value"]
 
+    return f"Weather in {location}: {description}, Temp: {temp_c}°C, Feels like: {feels_like}°C, Humidity: {humidity}%"
 
 
 # =============================================================================
@@ -68,9 +68,10 @@ def calculate(expression: str) -> str:
     try:
         result = eval(expression)
         print(f"[TOOL] calculate ('{expression}') -> '{result}'")
+        return str(result)
     except Exception as e:
         print(f"Exception has occured with error: {e}")
         return f"Exception has occured with error: {e}"
 
-    return result
+
 
