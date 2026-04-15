@@ -74,3 +74,23 @@ def calculate(expression: str) -> str:
 
     return result
 
+@tool
+# get current date and time
+def get_current_datetime(date: str) -> str:
+    """Get the current date and time.
+    
+    Use this tool for queries about the current date, time, or datetime.
+    Examples: "What is the current date?", "What time is it?", "Give me the current datetime"
+    
+    Args:
+        None
+        
+    Returns:
+        Current date and time as a string.
+    """
+    print("*" * 100)
+    from datetime import datetime
+    now = datetime.now()
+    result = now.strftime("%Y-%m-%d %H:%M:%S")
+    print(f"========> [TOOL] get_current_datetime () -> '{result}'")
+    return result
