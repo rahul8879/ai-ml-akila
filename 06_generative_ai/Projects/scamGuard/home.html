@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<!--
+  ============================================================
+  ScamGuard AI — Dashboard (single-file build)
+  ============================================================
+  Sab kuch ek hi file me hai:
+    - <style> tag    →  CSS (look & feel)
+    - <body> markup  →  HTML (structure)
+    - <script> tag   →  JS (behavior)
+
+  Python analogy:
+    - HTML  = data schema (boxes & labels)
+    - CSS   = styling config dict (colors, spacing)
+    - JS    = runtime client (fetches API, updates DOM)
+
+  Sirf ye file open karo browser me — koi external CSS/JS file
+  load karne ki zaroorat nahi (Google Fonts ka link rehta hai).
+  ============================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ScamGuard AI — Dashboard</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans for UI text, JetBrains Mono for numbers/code -->
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+
+  <style>
+    /* ============================================================
+       ScamGuard AI — Stylesheet (inline)
+       ============================================================
+       Quick CSS refresher (Python analogy):
+       - "selector { ... }" = ek dict literal: selector key hai,
+         block uska value (style rules).
+       - `:root` me CSS variables = global config constants.
+         var(--name) se kahin bhi reuse kar sakte ho.
+       ============================================================ */
+
+
+    /* ------------------------------------------------------------
+       1. DESIGN TOKENS (theme variables)
+       ------------------------------------------------------------ */
+    :root {
+      /* Background shades — lightest to darkest neutral */
+      --bg:  #f5f5f0;   /* page background */
+      --bg2: #ffffff;   /* card background */
+      --bg3: #f0efe9;   /* subtle panels / table headers */
+      --bg4: #e8e7e0;   /* slightly darker fill */
+
+      /* Border colors */
+      --border:  #e2e1da;
+      --border2: #d0cfc8;
+
+      /* Text colors — high to low emphasis */
+      --text:  #1a1a18; /* primary readable text */
+      --muted: #6b6a62; /* secondary text */
+      --dim:   #a0a098; /* tertiary / labels */
+
+      /* Brand + semantic colors */
+      --accent:       #2563eb;
+      --accent2:      #1d4ed8;
+      --accent-light: #eff6ff;
+      --green:       #059669;
+      --green-light: #ecfdf5;
+      --red:         #dc2626;
+      --red-light:   #fef2f2;
+      --amber:       #d97706;
+      --amber-light: #fffbeb;
+      --blue:        #2563eb;
+      --blue-light:  #eff6ff;
+
+      /* Typography */
+      --sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+
+      /* Reusable shape + depth */
+      --radius:    10px;
+      --shadow:    0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+    }
+
+
+    /* ------------------------------------------------------------
+       2. GLOBAL RESET
+       ------------------------------------------------------------ */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+
+    /* ------------------------------------------------------------
+       3. HEADER (top navigation bar)
+       ------------------------------------------------------------ */
+    header {
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2.5rem;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--text);
+      letter-spacing: -0.3px;
+    }
+    .logo-icon {
+      width: 30px;
+      height: 30px;
+      background: var(--accent);
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+    }
+
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      color: var(--muted);
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      padding: 5px 12px;
+      border-radius: 20px;
+    }
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--dim);
+      flex-shrink: 0;
+    }
+    .status-dot.online {
+      background: var(--green);
+      box-shadow: 0 0 0 2px rgba(5,150,105,0.2);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: 0.6 } }
+
+
+    /* ------------------------------------------------------------
+       4. PAGE CONTAINER
+       ------------------------------------------------------------ */
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 2rem 2.5rem;
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-bottom: 0.75rem;
+    }
+
+
+    /* ------------------------------------------------------------
+       5. CONTROL PANEL (the form at the top)
+       ------------------------------------------------------------ */
+    .control-panel {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow);
+    }
+
+    .controls-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr auto;
+      gap: 1rem;
+      align-items: end;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .form-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .form-input, .form-select {
+      background: var(--bg);
+      border: 1px solid var(--border2);
+      border-radius: 7px;
+      padding: 9px 12px;
+      font-size: 13px;
+      font-family: var(--sans);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      width: 100%;
+    }
+    .form-input:focus, .form-select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+    }
+    .form-select { cursor: pointer; }
+
+    .file-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg);
+      border: 1px dashed var(--border2);
+      border-radius: 7px;
+      padding: 9px 12px;
+      font-size: 13px;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s;
+      width: 100%;
+    }
+    .file-label:hover { border-color: var(--accent); color: var(--text); }
+    .file-label input { display: none; }
+    .file-label.has-file {
+      border-color: var(--green);
+      color: var(--green);
+      border-style: solid;
+    }
+
+    .run-btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 7px;
+      padding: 9px 24px;
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+      box-shadow: 0 2px 8px rgba(37,99,235,0.25);
+    }
+    .run-btn:hover  { background: var(--accent2); box-shadow: 0 4px 12px rgba(37,99,235,0.35); }
+    .run-btn:active { transform: scale(0.98); }
+    .run-btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+
+    /* ------------------------------------------------------------
+       6. PROGRESS BAR
+       ------------------------------------------------------------ */
+    .progress-wrap   { margin-top: 1rem; display: none; }
+    .progress-track  { height: 3px; background: var(--bg3); border-radius: 2px; overflow: hidden; margin-bottom: 6px; }
+    .progress-fill   { height: 100%; background: var(--accent); border-radius: 2px; width: 0%; transition: width 0.4s ease; }
+    .progress-text   { font-size: 12px; color: var(--muted); font-family: var(--mono); }
+
+
+    /* ------------------------------------------------------------
+       7. ERROR BOX
+       ------------------------------------------------------------ */
+    .error-box {
+      margin-top: 0.75rem;
+      background: var(--red-light);
+      border: 1px solid rgba(220,38,38,0.2);
+      border-radius: 7px;
+      padding: 10px 14px;
+      font-size: 13px;
+      color: var(--red);
+      display: none;
+    }
+
+
+    /* ------------------------------------------------------------
+       8. STAT CARDS
+       ------------------------------------------------------------ */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+    .stats-grid.visible { opacity: 1; transform: translateY(0); }
+
+    .stat-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--card-accent, var(--accent));
+      border-radius: var(--radius) var(--radius) 0 0;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.6rem;
+    }
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1;
+      margin-bottom: 0.35rem;
+      letter-spacing: -0.5px;
+    }
+    .stat-sub { font-size: 12px; color: var(--dim); }
+
+
+    /* ------------------------------------------------------------
+       9. CHARTS ROW
+       ------------------------------------------------------------ */
+    .charts-row {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.4s ease 0.15s, transform 0.4s ease 0.15s;
+    }
+    .charts-row.visible { opacity: 1; transform: translateY(0); }
+
+    .chart-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      box-shadow: var(--shadow);
+    }
+    .chart-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 1.25rem; }
+
+
+    /* Donut chart layout */
+    .donut-wrap   { display: flex; align-items: center; gap: 1.5rem; }
+    .donut-legend { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+    .legend-row   { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+    .legend-dot   { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+    .legend-name  { color: var(--muted); flex: 1; }
+    .legend-num   { font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--text); }
+
+
+    /* Horizontal bar chart */
+    .bar-list { display: flex; flex-direction: column; gap: 9px; }
+    .bar-row  { display: flex; align-items: center; gap: 10px; }
+    .bar-name {
+      font-size: 12px;
+      color: var(--muted);
+      width: 170px;
+      flex-shrink: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .bar-track { flex: 1; height: 7px; background: var(--bg3); border-radius: 4px; overflow: hidden; }
+    .bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      width: 0%;
+      transition: width 0.7s cubic-bezier(0.25,1,0.5,1);
+    }
+    .bar-num {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+      width: 24px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+
+    /* ------------------------------------------------------------
+       10. RESULTS TABLE
+       ------------------------------------------------------------ */
+    .results-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.4s ease 0.25s, transform 0.4s ease 0.25s;
+    }
+    .results-card.visible { opacity: 1; transform: translateY(0); }
+
+    .results-header {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg3);
+    }
+    .results-title { font-size: 13px; font-weight: 700; color: var(--text); }
+    .results-count { font-size: 12px; color: var(--dim); }
+
+    .table-scroll {
+      overflow-x: auto;
+      max-height: 500px;
+      overflow-y: auto;
+    }
+    .table-scroll::-webkit-scrollbar       { width: 5px; height: 5px; }
+    .table-scroll::-webkit-scrollbar-track { background: var(--bg3); }
+    .table-scroll::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead th {
+      text-align: left;
+      padding: 9px 14px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--dim);
+      background: var(--bg3);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      white-space: nowrap;
+    }
+    tbody tr             { border-bottom: 1px solid var(--border); transition: background 0.1s; }
+    tbody tr:last-child  { border-bottom: none; }
+    tbody tr:hover       { background: var(--bg3); }
+    tbody td {
+      padding: 11px 14px;
+      color: var(--muted);
+      vertical-align: top;
+      line-height: 1.5;
+    }
+    td.msg    { color: var(--text); font-size: 12px; max-width: 220px; }
+    td.reason { font-size: 12px; max-width: 200px; line-height: 1.5; }
+
+
+    /* ------------------------------------------------------------
+       11. BADGES
+       ------------------------------------------------------------ */
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+    .badge-scam      { background: var(--red-light);   color: var(--red); }
+    .badge-notscam   { background: var(--green-light); color: var(--green); }
+    .badge-uncertain { background: var(--amber-light); color: var(--amber); }
+    .badge-correct   { background: var(--green-light); color: var(--green); }
+    .badge-wrong     { background: var(--red-light);   color: var(--red); }
+
+
+    /* ------------------------------------------------------------
+       12. CONFIDENCE BAR
+       ------------------------------------------------------------ */
+    .conf-wrap  { display: flex; flex-direction: column; gap: 3px; min-width: 80px; }
+    .conf-label { font-family: var(--mono); font-size: 11px; color: var(--text); }
+    .conf-track { height: 4px; background: var(--bg4); border-radius: 2px; overflow: hidden; }
+    .conf-fill  { height: 100%; border-radius: 2px; background: var(--accent); }
+
+
+    /* ------------------------------------------------------------
+       13. EMPTY STATE
+       ------------------------------------------------------------ */
+    .empty       { text-align: center; padding: 4rem 2rem; color: var(--dim); }
+    .empty-icon  { font-size: 40px; margin-bottom: 1rem; opacity: 0.4; }
+    .empty-title { font-size: 15px; font-weight: 600; margin-bottom: 0.4rem; color: var(--muted); }
+    .empty-sub   { font-size: 13px; }
+
+
+    /* ------------------------------------------------------------
+       14. TOAST
+       ------------------------------------------------------------ */
+    .toast {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: var(--text);
+      color: white;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 999;
+      box-shadow: var(--shadow-md);
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+
+
+    /* ------------------------------------------------------------
+       15. RESPONSIVE LAYOUT
+       ------------------------------------------------------------ */
+    @media (max-width: 960px) {
+      .controls-row { grid-template-columns: 1fr 1fr; }
+      .stats-grid   { grid-template-columns: repeat(2,1fr); }
+      .charts-row   { grid-template-columns: 1fr; }
+      .container    { padding: 1.5rem; }
+      header        { padding: 0 1.5rem; }
+    }
+    @media (max-width: 580px) {
+      .stats-grid   { grid-template-columns: 1fr 1fr; }
+      .controls-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ===================================================
+       HEADER — sticky bar with logo + API connection status
+       =================================================== -->
+  <header>
+    <div class="logo">
+      <div class="logo-icon">🛡️</div>
+      ScamGuard AI
+    </div>
+
+    <div class="status-pill">
+      <div class="status-dot" id="statusDot"></div>
+      <span id="statusText">Connecting...</span>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- ===================================================
+         CONTROL PANEL
+         =================================================== -->
+    <div class="control-panel">
+      <div class="section-label">Batch Analysis</div>
+
+      <div class="controls-row">
+
+        <div class="form-group">
+          <label class="form-label">Prompt Version</label>
+          <select class="form-select" id="promptVersion">
+            <option value="">Default (.env)</option>
+            <option value="v1_zero_shot">v1 — Zero Shot</option>
+            <option value="v2_few_shot">v2 — Few Shot</option>
+            <option value="v3_cot">v3 — Chain of Thought</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Sample Size</label>
+          <input type="number" class="form-input" id="sampleSize"
+                 placeholder="e.g. 10 (blank = full dataset)"
+                 min="1" max="1000">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">CSV Upload (optional)</label>
+          <label class="file-label" id="fileLabel">
+            <span>📁</span>
+            <span id="fileName">Choose file (message_text + label columns)</span>
+            <input type="file" id="csvFile" accept=".csv" onchange="handleFile(this)">
+          </label>
+        </div>
+
+        <div>
+          <button class="run-btn" id="runBtn" onclick="runBatch()">
+            ▶ Run Analysis
+          </button>
+        </div>
+
+      </div>
+
+      <div class="progress-wrap" id="progressWrap">
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-text" id="progressText">Initializing...</div>
+      </div>
+
+      <div class="error-box" id="errorBox"></div>
+    </div>
+
+
+    <!-- ===================================================
+         STAT CARDS
+         =================================================== -->
+    <div class="stats-grid" id="statsGrid">
+
+      <div class="stat-card" style="--card-accent: #2563eb">
+        <div class="stat-label">Total Processed</div>
+        <div class="stat-value" id="statTotal">—</div>
+        <div class="stat-sub"   id="statVersion">—</div>
+      </div>
+
+      <div class="stat-card" style="--card-accent: #059669">
+        <div class="stat-label">Accuracy</div>
+        <div class="stat-value" id="statAccuracy">—</div>
+        <div class="stat-sub"   id="statCorrect">—</div>
+      </div>
+
+      <div class="stat-card" style="--card-accent: #dc2626">
+        <div class="stat-label">Scams Detected</div>
+        <div class="stat-value" id="statScam">—</div>
+        <div class="stat-sub"   id="statScamPct">—</div>
+      </div>
+
+      <div class="stat-card" style="--card-accent: #d97706">
+        <div class="stat-label">Not Scam</div>
+        <div class="stat-value" id="statClean">—</div>
+        <div class="stat-sub"   id="statUncertain">—</div>
+      </div>
+
+    </div>
+
+
+    <!-- ===================================================
+         CHARTS ROW
+         =================================================== -->
+    <div class="charts-row" id="chartsRow">
+
+      <div class="chart-card">
+        <div class="chart-title">Label Distribution</div>
+        <div class="donut-wrap">
+          <svg width="120" height="120" viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="46" fill="none"
+                    stroke="#f0efe9" stroke-width="16"/>
+
+            <circle id="arcScam"      cx="60" cy="60" r="46" fill="none"
+                    stroke="#dc2626" stroke-width="16"
+                    stroke-dasharray="0 289" stroke-linecap="butt"
+                    transform="rotate(-90 60 60)"
+                    style="transition:stroke-dasharray 0.9s ease"/>
+            <circle id="arcNotScam"   cx="60" cy="60" r="46" fill="none"
+                    stroke="#059669" stroke-width="16"
+                    stroke-dasharray="0 289" stroke-linecap="butt"
+                    transform="rotate(-90 60 60)"
+                    style="transition:stroke-dasharray 0.9s ease 0.2s"/>
+            <circle id="arcUncertain" cx="60" cy="60" r="46" fill="none"
+                    stroke="#d97706" stroke-width="16"
+                    stroke-dasharray="0 289" stroke-linecap="butt"
+                    transform="rotate(-90 60 60)"
+                    style="transition:stroke-dasharray 0.9s ease 0.4s"/>
+
+            <text id="donutPct" x="60" y="56" text-anchor="middle"
+                  font-family="Plus Jakarta Sans,sans-serif"
+                  font-size="17" font-weight="800" fill="#1a1a18">—</text>
+            <text x="60" y="71" text-anchor="middle"
+                  font-family="Plus Jakarta Sans,sans-serif"
+                  font-size="10" fill="#a0a098">accuracy</text>
+          </svg>
+
+          <div class="donut-legend">
+            <div class="legend-row">
+              <div class="legend-dot" style="background:#dc2626"></div>
+              <span class="legend-name">Scam</span>
+              <span class="legend-num" id="lgScam">—</span>
+            </div>
+            <div class="legend-row">
+              <div class="legend-dot" style="background:#059669"></div>
+              <span class="legend-name">Not Scam</span>
+              <span class="legend-num" id="lgNotScam">—</span>
+            </div>
+            <div class="legend-row">
+              <div class="legend-dot" style="background:#d97706"></div>
+              <span class="legend-name">Uncertain</span>
+              <span class="legend-num" id="lgUncertain">—</span>
+            </div>
+            <div class="legend-row">
+              <div class="legend-dot" style="background:#2563eb"></div>
+              <span class="legend-name">Correct</span>
+              <span class="legend-num" id="lgCorrect">—</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-title">Intent Type Breakdown</div>
+        <div class="bar-list" id="intentBars"></div>
+      </div>
+
+    </div>
+
+
+    <!-- ===================================================
+         RESULTS TABLE
+         =================================================== -->
+    <div class="results-card" id="resultsCard">
+      <div class="results-header">
+        <div class="results-title">Per-Message Results</div>
+        <div class="results-count" id="resultsCount">Run a batch to see results</div>
+      </div>
+
+      <div class="table-scroll">
+        <div id="tableBody">
+          <div class="empty">
+            <div class="empty-icon">🛡️</div>
+            <div class="empty-title">No results yet</div>
+            <div class="empty-sub">Configure above and click Run Analysis</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- ===================================================
+       TOAST
+       =================================================== -->
+  <div class="toast" id="toast">
+    <span id="toastIcon">✓</span>
+    <span id="toastMsg">Done</span>
+  </div>
+
+  <script>
+    /* ============================================================
+       ScamGuard AI — Frontend Logic (inline)
+       ============================================================
+       Python analogy:
+       - document.getElementById("foo")  ≈  dict lookup by primary key
+       - element.classList.add("visible")  ≈  el.classes.add("visible")
+       - async/await is identical to Python's asyncio
+       - fetch(url)  ≈  requests.get(url) but Promise-based
+       ============================================================ */
+
+
+    /* ------------------------------------------------------------
+       CONFIG
+       ------------------------------------------------------------ */
+    // FastAPI server ka URL. Agar uvicorn alag port pe chala rahe ho,
+    // yahan badal lo.
+    const BASE_URL = 'http://localhost:8000';
+
+    // User ki chosen CSV file (File object) ya null.
+    let currentFile = null;
+
+
+    /* ------------------------------------------------------------
+       FILE PICKER
+       ------------------------------------------------------------ */
+    function handleFile(input) {
+      currentFile = input.files[0] || null;
+
+      const label = document.getElementById('fileLabel');
+      const name  = document.getElementById('fileName');
+
+      if (currentFile) {
+        name.textContent = currentFile.name;
+        label.classList.add('has-file');
+      } else {
+        name.textContent = 'Choose file (message_text + label columns)';
+        label.classList.remove('has-file');
+      }
+    }
+
+
+    /* ------------------------------------------------------------
+       PROGRESS BAR HELPER
+       ------------------------------------------------------------ */
+    function setProgress(pct, text) {
+      document.getElementById('progressFill').style.width = pct + '%';
+      document.getElementById('progressText').textContent = text;
+    }
+
+
+    /* ------------------------------------------------------------
+       TOAST NOTIFICATION
+       ------------------------------------------------------------ */
+    function showToast(msg, icon = '✓') {
+      const toastEl = document.getElementById('toast');
+      document.getElementById('toastMsg').textContent  = msg;
+      document.getElementById('toastIcon').textContent = icon;
+
+      toastEl.classList.add('show');
+      setTimeout(() => toastEl.classList.remove('show'), 3000);
+    }
+
+
+    /* ------------------------------------------------------------
+       HEALTH CHECK — kya FastAPI server reachable hai?
+       ------------------------------------------------------------ */
+    async function checkServer() {
+      try {
+        const response = await fetch(BASE_URL + '/versions', {
+          signal: AbortSignal.timeout(3000),
+        });
+
+        if (response.ok) {
+          document.getElementById('statusDot').classList.add('online');
+          document.getElementById('statusText').textContent = 'API connected';
+          return true;
+        }
+      } catch {
+        console.log(response)
+      }
+
+      document.getElementById('statusDot').classList.remove('online');
+      document.getElementById('statusText').textContent = 'Connecting...';
+      return false;
+    }
+
+
+    /* ------------------------------------------------------------
+       MAIN ACTION — run a batch through the LLM pipeline
+       ------------------------------------------------------------ */
+    async function runBatch() {
+      const btn          = document.getElementById('runBtn');
+      const errorBox     = document.getElementById('errorBox');
+      const progressWrap = document.getElementById('progressWrap');
+
+      const version    = document.getElementById('promptVersion').value;
+      const sampleSize = document.getElementById('sampleSize').value;
+
+      errorBox.style.display = 'none';
+      btn.disabled    = true;
+      btn.textContent = '⏳ Running...';
+      progressWrap.style.display = 'block';
+      setProgress(10, 'Checking connection...');
+
+      const alive = await checkServer();
+      if (!alive) {
+        errorBox.textContent =
+          'Could not reach the API. Make sure uvicorn is running: uvicorn main:app --reload';
+        errorBox.style.display = 'block';
+        reset(btn, progressWrap);
+        return;
+      }
+
+      setProgress(35, 'Sending request to /batch/...');
+
+      try {
+        // Multipart/form-data body — equivalent of
+        // requests.post(url, files=..., data=...) in Python
+        const form = new FormData();
+        if (currentFile) form.append('file', currentFile);
+        if (version)     form.append('prompt_version', version);
+        if (sampleSize)  form.append('sample_size', parseInt(sampleSize));
+
+        setProgress(55, 'Waiting for LLM responses — this may take a moment...');
+
+        const response = await fetch(BASE_URL + '/batch/', {
+          method: 'POST',
+          body: form,
+        });
+
+        setProgress(88, 'Parsing results...');
+
+        if (!response.ok) {
+          const errBody = await response.json().catch(() => ({}));
+          throw new Error(errBody.detail || `HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+        setProgress(100, 'Complete!');
+
+        setTimeout(() => {
+          progressWrap.style.display = 'none';
+          renderDashboard(data);
+          showToast(`Done — ${data.summary.total_processed} messages analysed`);
+        }, 350);
+
+      } catch (err) {
+        errorBox.textContent      = 'Request failed: ' + err.message;
+        errorBox.style.display    = 'block';
+        progressWrap.style.display = 'none';
+        showToast('Request failed', '✗');
+      }
+
+      reset(btn, progressWrap);
+    }
+
+
+    function reset(btn /*, progressWrap */) {
+      btn.disabled    = false;
+      btn.textContent = '▶ Run Analysis';
+    }
+
+
+    /* ============================================================
+       RENDERING — JSON response ko dashboard pe paint karta hai
+       ============================================================ */
+    function renderDashboard(data) {
+      const s       = data.summary;
+      const results = data.results;
+      const total   = s.total_processed;
+      const accPct  = Math.round(s.accuracy * 100);
+
+      // ---------------- STAT CARDS ----------------
+      document.getElementById('statTotal').textContent     = total;
+      document.getElementById('statVersion').textContent   = 'Version: ' + s.prompt_version_used;
+      document.getElementById('statAccuracy').textContent  = accPct + '%';
+      document.getElementById('statCorrect').textContent   = s.correct_predictions + ' correct';
+      document.getElementById('statScam').textContent      = s.scam_detected;
+      document.getElementById('statScamPct').textContent   = Math.round(s.scam_detected / total * 100) + '% of total';
+      document.getElementById('statClean').textContent     = s.not_scam_detected;
+      document.getElementById('statUncertain').textContent = s.uncertain_detected + ' uncertain';
+      document.getElementById('statsGrid').classList.add('visible');
+
+      // ---------------- DONUT CHART ----------------
+      // Circumference C = 2 * pi * r, with r=46 → ~289
+      const C = 289;
+
+      const scamDash = (s.scam_detected      / total) * C;
+      const notDash  = (s.not_scam_detected  / total) * C;
+      const uncDash  = (s.uncertain_detected / total) * C;
+
+      const scamOff = -(C * 0.25);
+      const notOff  = scamOff - scamDash;
+      const uncOff  = notOff  - notDash;
+
+      setTimeout(() => {
+        setArc('arcScam',      scamDash, C, scamOff);
+        setArc('arcNotScam',   notDash,  C, notOff);
+        setArc('arcUncertain', uncDash,  C, uncOff);
+      }, 100);
+
+      document.getElementById('donutPct').textContent    = accPct + '%';
+      document.getElementById('lgScam').textContent      = s.scam_detected;
+      document.getElementById('lgNotScam').textContent   = s.not_scam_detected;
+      document.getElementById('lgUncertain').textContent = s.uncertain_detected;
+      document.getElementById('lgCorrect').textContent   = s.correct_predictions;
+      document.getElementById('chartsRow').classList.add('visible');
+
+      // ---------------- INTENT BAR CHART ----------------
+      // Equivalent: Counter(r.intent_type for r in results)
+      const counts = {};
+      results.forEach(r => {
+        counts[r.intent_type] = (counts[r.intent_type] || 0) + 1;
+      });
+
+      const sorted  = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 8);
+      const maxC    = sorted[0]?.[1] || 1;
+      const palette = ['#2563eb','#dc2626','#059669','#d97706','#7c3aed','#0891b2','#c2410c','#15803d'];
+
+      document.getElementById('intentBars').innerHTML = sorted.map(([name, cnt], i) => `
+        <div class="bar-row">
+          <div class="bar-name" title="${esc(name)}">${esc(name)}</div>
+          <div class="bar-track">
+            <div class="bar-fill"
+                 style="background:${palette[i % palette.length]}"
+                 data-w="${(cnt / maxC * 100).toFixed(1)}"></div>
+          </div>
+          <div class="bar-num">${cnt}</div>
+        </div>
+      `).join('');
+
+      setTimeout(() => {
+        document.querySelectorAll('.bar-fill').forEach(b => {
+          b.style.width = b.dataset.w + '%';
+        });
+      }, 200);
+
+      // ---------------- RESULTS TABLE ----------------
+      document.getElementById('resultsCount').textContent =
+        `${total} messages · ${s.prompt_version_used}`;
+
+      document.getElementById('tableBody').innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>Message</th>
+              <th>Actual</th>
+              <th>Predicted</th>
+              <th>Match</th>
+              <th>Intent</th>
+              <th>Confidence</th>
+              <th>Reasoning</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${results.map(r => `
+              <tr>
+                <td class="msg">${esc(r.message)}</td>
+                <td>${badge(r.actual_label)}</td>
+                <td>${badge(r.predicted_label)}</td>
+                <td>${
+                  r.is_correct
+                    ? '<span class="badge badge-correct">✓ Match</span>'
+                    : '<span class="badge badge-wrong">✗ Miss</span>'
+                }</td>
+                <td style="font-size:11px;white-space:nowrap">${esc(r.intent_type)}</td>
+                <td>
+                  <div class="conf-wrap">
+                    <span class="conf-label">${Math.round(r.confidence_score * 100)}%</span>
+                    <div class="conf-track">
+                      <div class="conf-fill" style="width:${Math.round(r.confidence_score * 100)}%"></div>
+                    </div>
+                  </div>
+                </td>
+                <td class="reason">${esc(r.reasoning)}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+      document.getElementById('resultsCard').classList.add('visible');
+    }
+
+
+    /* SVG donut helper */
+    function setArc(id, dash, circ, offset) {
+      const el = document.getElementById(id);
+      el.setAttribute('stroke-dasharray',  `${dash} ${circ - dash}`);
+      el.setAttribute('stroke-dashoffset', offset);
+    }
+
+
+    /* badge(label) — string → colored <span class="badge ..."> */
+    function badge(label) {
+      if (!label) return '—';
+
+      const map = {
+        'scam':     'badge-scam',
+        'not scam': 'badge-notscam',
+        'uncertain':'badge-uncertain',
+      };
+      const cls = map[label.toLowerCase()] || '';
+      return `<span class="badge ${cls}">${esc(label)}</span>`;
+    }
+
+
+    /* esc(s) — html.escape() ka JS equivalent (XSS protection) */
+    function esc(s) {
+      if (!s) return '';
+      return s
+        .replace(/&/g,  '&amp;')
+        .replace(/</g,  '&lt;')
+        .replace(/>/g,  '&gt;')
+        .replace(/"/g,  '&quot;');
+    }
+
+
+    /* ------------------------------------------------------------
+       STARTUP
+       ------------------------------------------------------------ */
+    window.addEventListener('load', () => {
+      checkServer();
+      setInterval(checkServer, 15000);
+    });
+  </script>
+</body>
+</html>
